@@ -1,0 +1,30 @@
+# Blueprint de Render: un Web Service (Express sirve API + frontend) y una base PostgreSQL.
+services:
+  - type: web
+    name: aula-abierta
+    runtime: node
+    plan: free
+    buildCommand: npm install --omit=dev
+    startCommand: node server.js
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: aula-abierta-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_EMAIL        # tú lo defines en el panel de Render al crear el Blueprint
+        sync: false
+      - key: ADMIN_PASSWORD     # mínimo 10 caracteres
+        sync: false
+      - key: SEED_DEMO          # "true" carga los artículos de ejemplo la primera vez
+        value: "true"
+
+databases:
+  - name: aula-abierta-db
+    plan: free
+    databaseName: aula_abierta
+    user: aula_abierta
